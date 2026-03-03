@@ -9,6 +9,8 @@ import { CompanyModule } from './modules/companies/company.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { UsersModule } from './modules/users/users.module';
 import { EmployeesModule } from './modules/employees/employees.module';
+import { SideoMailerModule } from './modules/mailer/mailer.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -17,7 +19,13 @@ import { EmployeesModule } from './modules/employees/employees.module';
       inject: [ConfigService],
       useFactory: getDatabaseConfig,
     }),
-    CompanyModule, SubscriptionsModule, UsersModule, EmployeesModule],
+    CompanyModule,
+    SubscriptionsModule,
+    UsersModule,
+    EmployeesModule,
+    SideoMailerModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

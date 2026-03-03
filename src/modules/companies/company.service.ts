@@ -1,26 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Company } from './entities/company.entity';
 
 @Injectable()
 export class CompanyService {
-  create(createCompanyDto: CreateCompanyDto) {
-    return 'This action adds a new company';
+  constructor(
+    @InjectRepository(Company)
+    private readonly companyRepo: Repository<Company>,
+  ) {}
+
+  async create(data: Partial<Company>): Promise<Company> {
+    const exists = await this.companyRepo.findOne({ where: { nit: data.nit } });
+    if (exists) throw new ConflictException('Ya existe una empresa con ese NIT');
+
+    const company = this.companyRepo.create(data);
+    return this.companyRepo.save(company);
   }
 
-  findAll() {
-    return `This action returns all company`;
+  async findById(id: string): Promise<Company | null> {
+    return this.companyRepo.findOne({ where: { id } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
-  }
-
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} company`;
+  async update(id: string, data: Partial<Company>): Promise<Company | null> {
+    await this.companyRepo.update(id, data);
+    return this.findById(id);
   }
 }
