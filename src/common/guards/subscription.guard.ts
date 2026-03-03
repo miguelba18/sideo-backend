@@ -1,4 +1,6 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable, CanActivate, ExecutionContext, ForbiddenException,
+} from '@nestjs/common';
 import { SubscriptionsService } from '../../modules/subscriptions/subscriptions.service';
 import { RoleEnum } from '../enums/role.enum';
 
@@ -14,7 +16,9 @@ export class SubscriptionGuard implements CanActivate {
     const isValid = await this.subscriptionsService.isSubscriptionValid(user.companyId);
 
     if (!isValid) {
-      throw new ForbiddenException('Tu suscripción ha expirado. Por favor renueva tu plan.');
+      throw new ForbiddenException(
+        'No tienes una suscripción activa. Renueva tu plan para continuar.',
+      );
     }
 
     return true;

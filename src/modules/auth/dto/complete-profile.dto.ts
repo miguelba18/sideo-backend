@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MinLength, Matches } from 'class-validator';
+import { IsOptional, IsString, MinLength, Matches, IsUrl } from 'class-validator';
 
 export class CompleteProfileDto {
   @IsString()
@@ -31,4 +31,8 @@ export class CompleteProfileDto {
   @IsString()
   @IsOptional()
   companySector?: string;
+
+  @IsUrl({}, { message: 'logoUrl debe ser una URL válida' })
+  @IsOptional()
+  logoUrl?: string;
 }

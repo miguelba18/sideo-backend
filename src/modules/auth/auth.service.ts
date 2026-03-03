@@ -71,10 +71,13 @@ export class AuthService {
     if (!passwordValid) throw new UnauthorizedException('Credenciales inválidas');
 
     if (user.role !== RoleEnum.SUPER_ADMIN) {
-      const isValid = await this.subscriptionsService.isSubscriptionValid(user.companyId);
-      if (!isValid) throw new UnauthorizedException('Tu suscripción ha expirado. Renueva tu plan para continuar.');
-    }
-
+  const isValid = await this.subscriptionsService.isSubscriptionValid(user.companyId);
+  if (!isValid) {
+    throw new UnauthorizedException(
+      'No tienes una suscripción activa. Renueva tu plan para continuar.',
+    );
+  }
+}
     await this.userRepo.update(user.id, { lastLogin: new Date() });
 
     const token = this.jwtService.sign({ sub: user.id, role: user.role, companyId: user.companyId });
@@ -113,6 +116,7 @@ export class AuthService {
       await this.companiesService.update(user.companyId, {
         address: dto.companyAddress,
         sector: dto.companySector,
+        logoUrl: dto.logoUrl,
       });
     }
 
