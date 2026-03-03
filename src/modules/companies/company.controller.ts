@@ -17,7 +17,7 @@ export class CompanyController {
     return this.companyService.findAll();
   }
 
-  @Get(':id')
+  /*@Get(':id')
   findOne(@Param('id') id: string) {
     return this.companyService.findOne(+id);
   }
@@ -30,5 +30,5 @@ export class CompanyController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.companyService.remove(+id);
-  }
+  }*/
 }

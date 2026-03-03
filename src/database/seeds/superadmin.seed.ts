@@ -11,7 +11,7 @@ async function bootstrap() {
   const userRepo = app.get<Repository<User>>(getRepositoryToken(User));
 
   const existing = await userRepo.findOne({
-    where: { email: 'admin@admin.com' },
+    where: { email: 'superadmin@sideo.app' },
   });
 
   if (existing) {
@@ -20,12 +20,12 @@ async function bootstrap() {
     return;
   }
 
-  const passwordHash = await bcrypt.hash('Admin123*', 10);
+  const passwordHash = await bcrypt.hash('SuperAdmin2026!', 10);
 
   const user = userRepo.create({
     firstName: 'Super',
     lastName: 'Admin',
-    email: 'admin@admin.com',
+    email: 'superadmin@sideo.app',
     passwordHash,
     role: RoleEnum.SUPER_ADMIN,
     active: true,

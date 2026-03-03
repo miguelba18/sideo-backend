@@ -18,6 +18,10 @@ export class CompanyService {
     return this.companyRepo.save(company);
   }
 
+  async findAll(): Promise<Company[]> {
+    return this.companyRepo.find();
+  }
+
   async findById(id: string): Promise<Company | null> {
     return this.companyRepo.findOne({ where: { id } });
   }

@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { MailerService } from './mailer.service';
+import { MailerService } from '@nestjs-modules/mailer';
 import { CreateMailerDto } from './dto/create-mailer.dto';
 import { UpdateMailerDto } from './dto/update-mailer.dto';
 
@@ -7,7 +7,7 @@ import { UpdateMailerDto } from './dto/update-mailer.dto';
 export class MailerController {
   constructor(private readonly mailerService: MailerService) {}
 
-  @Post()
+  /*@Post()
   create(@Body() createMailerDto: CreateMailerDto) {
     return this.mailerService.create(createMailerDto);
   }
@@ -30,5 +30,5 @@ export class MailerController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.mailerService.remove(+id);
-  }
+  }*/
 }

@@ -18,7 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed:superadmin": "ts-node -r tsconfig-paths/register src/database/seeds/superadmin.seed.ts"
+    "seed:superadmin": "ts-node -r tsconfig-paths/register src/database/seeds/superadmin.seed.ts",
+    "seed:roles": "ts-node -r tsconfig-paths/register src/database/seeds/roles-permissions.seed.ts",
+    "seed:all": "npm run seed:roles && npm run seed:superadmin"
   },
   "dependencies": {
     "@casl/ability": "^6.8.0",
