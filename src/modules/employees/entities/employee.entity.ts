@@ -45,6 +45,12 @@ export class Employee {
 
   @Column({ default: true })
   active: boolean;
+  
+  @Column({ default: 0 })
+  totalEvaluations: number;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  lastEvaluationDate: Date;
 
   @CreateDateColumn()
   createdAt: Date;
