@@ -7,7 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import * as puppeteer from 'puppeteer';
+import * as puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import { Report } from './entities/report.entity';
 import { Evaluation } from '../evaluations/entities/evaluation.entity';
 import { EvaluationDetail } from '../evaluations/entities/evaluacion-detail.entity';
@@ -136,25 +137,18 @@ const fileName = `${companyId}/ROSA_${lastName}_${firstName}_${Date.now()}.pdf`;
   let browser: puppeteer.Browser | null = null;
   try {
     browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
       headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-      ],
     });
 
     const page = await browser.newPage();
-
     await page.setContent(html, { waitUntil: 'domcontentloaded' });
-
     await page.evaluateHandle('document.fonts.ready');
 
     const pdf = await page.pdf({
       format: 'A4',
       printBackground: true,
-      displayHeaderFooter: false,
       margin: { top: '20mm', right: '15mm', bottom: '20mm', left: '15mm' },
     });
 
