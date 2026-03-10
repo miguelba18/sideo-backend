@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Evaluation } from './entities/evaluation.entity';
@@ -6,6 +10,7 @@ import { EvaluationDetail } from './entities/evaluacion-detail.entity';
 import { EmployeesService } from '../employees/employees.service';
 import { RosaCalculator } from './rosa/rosa-calculator';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
+import { ReportsService } from '../reports/reports.service';
 
 @Injectable()
 export class EvaluationsService {
@@ -17,10 +22,18 @@ export class EvaluationsService {
     @InjectRepository(EvaluationDetail)
     private readonly detailRepo: Repository<EvaluationDetail>,
     private readonly employeesService: EmployeesService,
+    private readonly reportsService: ReportsService,
   ) {}
 
-  async create(evaluatorId: string, companyId: string, dto: CreateEvaluationDto) {
-    const employee = await this.employeesService.findOneByCompany(dto.employeeId, companyId);
+  async create(
+    evaluatorId: string,
+    companyId: string,
+    dto: CreateEvaluationDto,
+  ) {
+    const employee = await this.employeesService.findOneByCompany(
+      dto.employeeId,
+      companyId,
+    );
 
     if (!employee.active) {
       throw new ForbiddenException('No se pueden evaluar empleados inactivos.');
@@ -52,11 +65,20 @@ export class EvaluationsService {
       this.detailRepo.create({
         evaluationId: saved.id,
         ...scores,
-        rawInput: { chair: dto.chair, screen: dto.screen, peripherals: dto.peripherals },
+        rawInput: {
+          chair: dto.chair,
+          screen: dto.screen,
+          peripherals: dto.peripherals,
+        },
       }),
     );
 
     await this.employeesService.incrementEvaluationCount(dto.employeeId);
+    const report = await this.reportsService.generateFromEvaluation(
+      saved.id,
+      companyId,
+      evaluatorId,
+    );
 
     return {
       id: saved.id,
@@ -84,6 +106,9 @@ export class EvaluationsService {
       recommendations: scores.recommendations,
       employee: `${employee.firstName} ${employee.lastName}`,
       area: employee.area,
+      report: {
+        file: report,
+      },
     };
   }
 
@@ -107,7 +132,10 @@ export class EvaluationsService {
   }
 
   async findAllByEmployee(employeeId: string, companyId: string) {
-    const employee = await this.employeesService.findOneByCompany(employeeId, companyId);
+    const employee = await this.employeesService.findOneByCompany(
+      employeeId,
+      companyId,
+    );
 
     const evaluations = await this.evaluationRepo.find({
       where: { employeeId },

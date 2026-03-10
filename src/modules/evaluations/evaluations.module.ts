@@ -7,6 +7,7 @@ import { EvaluationsController } from './evaluations.controller';
 import { EmployeesModule } from '../employees/employees.module';
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 import { RolesModule } from '../roles/roles.module';
+import { ReportsModule } from '../reports/reports.module';
 
 
 @Module({
@@ -14,7 +15,8 @@ import { RolesModule } from '../roles/roles.module';
     TypeOrmModule.forFeature([Evaluation, EvaluationDetail]),
     EmployeesModule,
     SubscriptionsModule,
-    RolesModule
+    RolesModule,
+    ReportsModule
     
   ],
   providers: [EvaluationsService],

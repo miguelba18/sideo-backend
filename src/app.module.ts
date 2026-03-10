@@ -13,6 +13,7 @@ import { SideoMailerModule } from './modules/mailer/mailer.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { EvaluationsModule } from './modules/evaluations/evaluations.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { EvaluationsModule } from './modules/evaluations/evaluations.module';
     AuthModule,
     RolesModule,
     EvaluationsModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
