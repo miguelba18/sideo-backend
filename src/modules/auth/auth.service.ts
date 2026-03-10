@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from '../users/entities/user.entity';
-import { CompanyService } from '../companies/company.service';
+import { CompaniesService } from '../companies/company.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { SideoMailerService } from '../mailer/mailer.service';
 import { RoleEnum } from '../../common/enums/role.enum';
@@ -19,7 +19,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
-    private readonly companiesService: CompanyService,
+    private readonly companiesService: CompaniesService,
     private readonly subscriptionsService: SubscriptionsService,
     private readonly mailerService: SideoMailerService,
     private readonly jwtService: JwtService,

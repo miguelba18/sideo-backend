@@ -1,34 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { CompanyService } from './company.service';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import {
+  Controller, Get, Param, Patch, UseGuards,
+} from '@nestjs/common';
+import { CompaniesService } from './company.service';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { RoleEnum } from '../../common/enums/role.enum';
 
-@Controller('company')
-export class CompanyController {
-  constructor(private readonly companyService: CompanyService) {}
+@Controller('companies')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleEnum.SUPER_ADMIN)
+export class CompaniesController {
+  constructor(private readonly companiesService: CompaniesService) {}
 
-  @Post()
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companyService.create(createCompanyDto);
+  @Get('dashboard')
+  getSuperAdminDashboard() {
+    return this.companiesService.getSuperAdminDashboard();
   }
 
   @Get()
   findAll() {
-    return this.companyService.findAll();
+    return this.companiesService.findAllWithStats();
   }
 
-  /*@Get(':id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.companyService.findOne(+id);
+    return this.companiesService.findOneWithStats(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-    return this.companyService.update(+id, updateCompanyDto);
+  @Patch(':id/toggle-active')
+  toggleActive(@Param('id') id: string) {
+    return this.companiesService.toggleActive(id);
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.companyService.remove(+id);
-  }*/
 }
