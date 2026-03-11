@@ -15,7 +15,8 @@ import { SideoMailerService } from './mailer.service';
             user: config.get('MAIL_USER'),
             pass: config.get('MAIL_PASS'),
           },
-          family: 4,
+          connectionTimeout: 10000,
+          greetingTimeout: 10000, 
         },
         defaults: {
           from: `"SIDEO" <${config.get('MAIL_FROM')}>`,
