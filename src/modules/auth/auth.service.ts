@@ -38,9 +38,13 @@ export class AuthService {
     await this.subscriptionsService.createSubscription(company.id, dto.plan, dto.paymentMethod);
 
     const tempPassword = this.generateTempPassword();
-    const passwordHash = await bcrypt.hash(tempPassword, 10);
+    const passwordHash = await bcrypt.hash(tempPassword, 6);
     const tempExpiry = new Date();
     tempExpiry.setHours(tempExpiry.getHours() + 24);
+    const existingEmail = await this.userRepo.findOne({ where: { email: dto.adminEmail } });
+    if (existingEmail) {
+      throw new BadRequestException('El correo del administrador ya está registrado');
+    }
 
     const user = this.userRepo.create({
       companyId: company.id,
@@ -54,9 +58,14 @@ export class AuthService {
     });
 
     await this.userRepo.save(user);
-    await this.mailerService.sendWelcomeCredentials(user.email, user.firstName, tempPassword);
 
-    return { message: 'Empresa registrada. Revisa tu correo para obtener tus credenciales.' };
+this.mailerService.sendWelcomeCredentials(
+  user.email,
+  user.firstName,
+  tempPassword
+).catch(err => console.error('Email error', err));
+
+return { message: 'Empresa registrada. Revisa tu correo para obtener tus credenciales.' };
   }
 
   async login(dto: LoginDto) {
