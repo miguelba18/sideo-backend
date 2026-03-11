@@ -16,6 +16,11 @@ import { SideoMailerService } from './mailer.service';
             user: config.get('MAIL_USER'),
             pass: config.get('MAIL_PASS'),
           },
+          family: 4,
+  requireTLS: true,
+  tls: {
+    rejectUnauthorized: false,
+  }
         },
         defaults: {
           from: `"SIDEO" <${config.get('MAIL_FROM')}>`,
