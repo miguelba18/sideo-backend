@@ -22,5 +22,8 @@ export const getDatabaseConfig = (config: ConfigService): TypeOrmModuleOptions =
   ssl: {
     rejectUnauthorized: false,
   },
+  extra: {
+    family: 4,
+  },
   logging: false,
 });
