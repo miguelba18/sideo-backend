@@ -12,14 +12,10 @@ import { SideoMailerService } from './mailer.service';
           host: config.get('MAIL_HOST'),
           port: config.get<number>('MAIL_PORT'),
           secure: false,
-          requireTLS: true,
           auth: {
             user: config.get('MAIL_USER'),
             pass: config.get('MAIL_PASS'),
           },
-          connectionTimeout: 10000,
-          greetingTimeout: 10000, 
-          family: 4,
         },
         defaults: {
           from: `"SIDEO" <${config.get('MAIL_FROM')}>`,
