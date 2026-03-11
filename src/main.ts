@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
+import dns from 'dns';
 
 process.removeAllListeners('warning');
 process.on('warning', (warning) => {
@@ -8,6 +9,7 @@ process.on('warning', (warning) => {
   console.warn(warning);
 });
 async function bootstrap() {
+  dns.setDefaultResultOrder('ipv4first');
   const app = await NestFactory.create(AppModule,
     {
       logger: ['log', 'error', 'warn', 'debug', 'verbose'],
