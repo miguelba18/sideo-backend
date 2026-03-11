@@ -17,6 +17,7 @@ export class SideoMailerService {
 
   } catch (error) {
     console.error('Email error', error);
+    throw error;
   }
 }
 

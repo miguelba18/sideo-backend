@@ -11,6 +11,8 @@ import { SideoMailerService } from './mailer.service';
         transport: {
           host: config.get('MAIL_HOST'),
           port: config.get<number>('MAIL_PORT'),
+          secure: false,
+          requireTLS: true,
           auth: {
             user: config.get('MAIL_USER'),
             pass: config.get('MAIL_PASS'),
