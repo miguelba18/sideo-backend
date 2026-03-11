@@ -6,12 +6,20 @@ export class SideoMailerService {
   constructor(private readonly mailer: MailerService) {}
 
   async sendWelcomeCredentials(email: string, name: string, tempPassword: string) {
-    await this.mailer.sendMail({
+  try {
+    const result = await this.mailer.sendMail({
       to: email,
       subject: 'Bienvenido a SIDEO — Tus credenciales de acceso',
       html: this.buildWelcomeTemplate(name, email, tempPassword),
     });
+
+    console.log('Email sent:', result.messageId);
+
+  } catch (error) {
+    console.error('Email error', error);
   }
+}
+
 
   async sendPasswordChanged(email: string, name: string) {
     await this.mailer.sendMail({
