@@ -7,13 +7,20 @@ import { RoleEnum, PermissionAction, PermissionModule } from '../../common/enums
 
 config();
 
-const dataSource = new DataSource({
+/*const dataSource = new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
+  entities: [Role, Permission, RolePermission],
+  synchronize: false,
+});*/
+const dataSource = new DataSource({
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
   entities: [Role, Permission, RolePermission],
   synchronize: false,
 });
