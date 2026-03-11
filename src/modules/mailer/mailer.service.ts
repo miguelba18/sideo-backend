@@ -21,7 +21,10 @@ export class SideoMailerService {
       this.logger.log(`Correo enviado a ${email}`);
     } catch (error) {
       this.logger.warn(`Email no enviado a ${email}: ${error.message}`);
-      throw error;
+      if (error.response?.body?.errors) {
+    this.logger.warn(`SendGrid errors: ${JSON.stringify(error.response.body.errors)}`);
+  }
+  throw error;
     }
   }
 
