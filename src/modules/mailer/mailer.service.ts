@@ -1,33 +1,41 @@
-import { Injectable } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import sgMail = require('@sendgrid/mail');
 
 @Injectable()
 export class SideoMailerService {
-  constructor(private readonly mailer: MailerService) {}
+  private readonly logger = new Logger(SideoMailerService.name);
 
-  async sendWelcomeCredentials(email: string, name: string, tempPassword: string) {
-  try {
-    const result = await this.mailer.sendMail({
-      to: email,
-      subject: 'Bienvenido a SIDEO — Tus credenciales de acceso',
-      html: this.buildWelcomeTemplate(name, email, tempPassword),
-    });
-
-    console.log('Email sent:', result.messageId);
-
-  } catch (error) {
-    console.error('Email error', error);
-    throw error;
+  constructor(private readonly config: ConfigService) {
+    sgMail.setApiKey(this.config.get<string>('SENDGRID_API_KEY')!);
   }
-}
 
+  async sendWelcomeCredentials(email: string, name: string, tempPassword: string): Promise<void> {
+    try {
+      await sgMail.send({
+        to: email,
+        from: { email: this.config.get<string>('MAIL_FROM')!, name: 'SIDEO' },
+        subject: 'Bienvenido a SIDEO — Tus credenciales de acceso',
+        html: this.buildWelcomeTemplate(name, email, tempPassword),
+      });
+      this.logger.log(`Correo enviado a ${email}`);
+    } catch (error) {
+      this.logger.warn(`Email no enviado a ${email}: ${error.message}`);
+      throw error;
+    }
+  }
 
-  async sendPasswordChanged(email: string, name: string) {
-    await this.mailer.sendMail({
-      to: email,
-      subject: 'SIDEO — Contraseña actualizada',
-      html: `<p>Hola ${name}, tu contraseña fue actualizada exitosamente.</p>`,
-    });
+  async sendPasswordChanged(email: string, name: string): Promise<void> {
+    try {
+      await sgMail.send({
+        to: email,
+        from: { email: this.config.get<string>('MAIL_FROM')!, name: 'SIDEO' },
+        subject: 'SIDEO — Contraseña actualizada',
+        html: `<p>Hola ${name}, tu contraseña fue actualizada exitosamente.</p>`,
+      });
+    } catch (error) {
+      this.logger.warn(`Email no enviado a ${email}: ${error.message}`);
+    }
   }
 
   private buildWelcomeTemplate(name: string, email: string, tempPassword: string): string {
@@ -45,8 +53,8 @@ export class SideoMailerService {
             <p style="margin: 8px 0 0; color: #111827;"><strong>Contraseña temporal:</strong> ${tempPassword}</p>
           </div>
           <p style="color: #EF4444; font-size: 14px;">Al ingresar deberás cambiar tu contraseña y completar tu perfil.</p>
-          <a href="${process.env.FRONTEND_URL}/login" 
-             style="display: inline-block; background: #1E3A8A; color: #fff; padding: 12px 24px; 
+          <a href="${this.config.get('FRONTEND_URL')}/login"
+             style="display: inline-block; background: #1E3A8A; color: #fff; padding: 12px 24px;
                     border-radius: 8px; text-decoration: none; margin-top: 16px;">
             Ingresar a SIDEO
           </a>
