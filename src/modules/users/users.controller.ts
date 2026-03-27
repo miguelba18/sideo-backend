@@ -4,6 +4,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateEvaluatorDto } from './dto/create-evaluator.dto';
 import { UpdateUserDto } from './dto/update-evaluator.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { SubscriptionGuard } from '../../common/guards/subscription.guard';
@@ -20,6 +21,12 @@ import { User } from './entities/user.entity';
 @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Patch('me')
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN, RoleEnum.EVALUATOR)
+  updateProfile(@CurrentUser() user: User, @Body() dto: UpdateProfileDto) {
+    return this.usersService.updateProfile(user.id, dto);
+  }
 
   @Post('evaluators')
   @Permission(PermissionModule.USERS, PermissionAction.CREATE)

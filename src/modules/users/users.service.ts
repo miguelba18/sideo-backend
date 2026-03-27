@@ -14,6 +14,7 @@ import { SideoMailerService } from '../mailer/mailer.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 import { CreateEvaluatorDto } from './dto/create-evaluator.dto';
 import { UpdateUserDto } from './dto/update-evaluator.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -73,6 +74,14 @@ export class UsersService {
 
     if (!user) throw new NotFoundException('Usuario no encontrado');
     return user;
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.userRepo.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    await this.userRepo.update(userId, dto);
+    return { message: 'Perfil actualizado exitosamente' };
   }
 
   async update(userId: string, companyId: string, dto: UpdateUserDto) {
