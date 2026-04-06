@@ -152,7 +152,7 @@ export class RosaCalculator {
     const armrests = this.scoreArmrests(input.chair);
     const backrest = this.scoreBackrest(input.chair);
 
-    const seatPlusDepth = Math.min(seatHeight + seatDepth, 8);
+    const seatPlusDepth = Math.max(1, Math.min(seatHeight + seatDepth, 8));
     const armrestsPlusBackrest = Math.min(armrests + backrest, 9);
     const chairTableA = this.TABLE_A[seatPlusDepth][armrestsPlusBackrest];
     const chairUsageTime = this.scoreUsageTime(input.chair.chairUsageTime);
@@ -182,12 +182,12 @@ export class RosaCalculator {
     const keyboardIndex = Math.min(keyboardWithTime, 7);
     const tableC = this.TABLE_C[mouseIndex][keyboardIndex];
 
-    const tableBIndex = Math.min(tableB, 9);
-    const tableCIndex = Math.min(tableC, 9);
+    const tableBIndex = Math.max(1, Math.min(tableB, 9));
+    const tableCIndex = Math.max(1, Math.min(tableC, 9));
     const tableD = this.TABLE_D[tableBIndex][tableCIndex];
 
-    const chairIndex = Math.min(chairTotal, 10);
-    const tableDIndex = Math.min(tableD, 10);
+    const chairIndex = Math.max(1, Math.min(chairTotal, 10));
+    const tableDIndex = Math.max(1, Math.min(tableD, 10));
     const rosaFinal = this.TABLE_E[chairIndex][tableDIndex];
 
     const { riskLevel, actionLevel, actionRequired } = this.getRiskLevel(rosaFinal);

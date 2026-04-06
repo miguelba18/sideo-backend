@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import * as puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
 import { Report } from './entities/report.entity';
 import { Evaluation } from '../evaluations/entities/evaluation.entity';
 import { EvaluationDetail } from '../evaluations/entities/evaluacion-detail.entity';
@@ -136,23 +135,13 @@ const fileName = `${companyId}/ROSA_${lastName}_${firstName}_${Date.now()}.pdf`;
   private async renderPdf(html: string): Promise<Buffer> {
   let browser: puppeteer.Browser | null = null;
   try {
-    const isProduction = process.env.NODE_ENV === 'production';
-
-    const launchOptions = isProduction
-      ? {
-          args: chromium.args,
-          executablePath: await chromium.executablePath(),
-          headless: true as const,
-        }
-      : {
-          args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          executablePath:
-            process.env.CHROMIUM_PATH ||
-            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-          headless: true as const,
-        };
-
-    browser = await puppeteer.launch(launchOptions);
+    browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath:
+        process.env.CHROMIUM_PATH ||
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      headless: true,
+    });
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'domcontentloaded' });
@@ -166,7 +155,8 @@ const fileName = `${companyId}/ROSA_${lastName}_${firstName}_${Date.now()}.pdf`;
 
     return Buffer.from(pdf);
   } catch (err) {
-    throw new InternalServerErrorException(`Error al generar el PDF: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    throw new InternalServerErrorException(`Error al generar el PDF: ${message}`);
   } finally {
     if (browser) await browser.close();
   }
