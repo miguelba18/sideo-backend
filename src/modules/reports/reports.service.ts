@@ -91,6 +91,13 @@ const fileName = `${companyId}/ROSA_${lastName}_${firstName}_${Date.now()}.pdf`;
     return this.reportRepo.save(report);
   }
 
+  async findByEvaluation(evaluationId: string) {
+    return this.reportRepo.findOne({
+      where: { evaluationId },
+      select: ['id', 'fileName', 'publicUrl', 'createdAt'],
+    });
+  }
+
   async findAllByCompany(companyId: string) {
     const reports = await this.reportRepo.find({
       where: { companyId },

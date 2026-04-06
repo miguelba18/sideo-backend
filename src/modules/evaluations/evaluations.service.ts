@@ -166,11 +166,23 @@ export class EvaluationsService {
 
     if (!evaluation) throw new NotFoundException('Evaluación no encontrada');
 
-    const detail = await this.detailRepo.findOne({
-      where: { evaluationId },
-    });
+    const [detail, report] = await Promise.all([
+      this.detailRepo.findOne({ where: { evaluationId } }),
+      this.reportsService.findByEvaluation(evaluationId),
+    ]);
 
-    return { ...evaluation, detail };
+    return {
+      ...evaluation,
+      detail,
+      report: report
+        ? {
+            id: report.id,
+            fileName: report.fileName.split('/').pop(),
+            publicUrl: report.publicUrl,
+            createdAt: report.createdAt,
+          }
+        : null,
+    };
   }
 
   async getDashboardStats(companyId: string) {
