@@ -136,11 +136,23 @@ const fileName = `${companyId}/ROSA_${lastName}_${firstName}_${Date.now()}.pdf`;
   private async renderPdf(html: string): Promise<Buffer> {
   let browser: puppeteer.Browser | null = null;
   try {
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath(),
-      headless: true,
-    });
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    const launchOptions = isProduction
+      ? {
+          args: chromium.args,
+          executablePath: await chromium.executablePath(),
+          headless: true as const,
+        }
+      : {
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          executablePath:
+            process.env.CHROMIUM_PATH ||
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+          headless: true as const,
+        };
+
+    browser = await puppeteer.launch(launchOptions);
 
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'domcontentloaded' });
