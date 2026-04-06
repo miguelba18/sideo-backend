@@ -27,7 +27,7 @@ export class EvaluationsController {
 
   @Get()
   @UseGuards(RolesGuard)
-  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN)
+  @Roles(RoleEnum.ADMIN, RoleEnum.SUPER_ADMIN, RoleEnum.EVALUATOR)
   @Permission(PermissionModule.EVALUATIONS, PermissionAction.READ)
   findAll(@CurrentUser() user: User) {
     return this.evaluationsService.findAllByCompany(user.companyId);
