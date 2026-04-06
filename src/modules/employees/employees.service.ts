@@ -73,7 +73,10 @@ export class EmployeesService {
   async findAllByCompanyForEvaluator(companyId: string) {
     const employees = await this.employeeRepo.find({
       where: { companyId, active: true },
-      select: ['id', 'firstName', 'lastName', 'position', 'area', 'email'],
+      select: [
+        'id', 'firstName', 'lastName', 'position', 'area', 'email',
+        'totalEvaluations', 'lastEvaluationDate',
+      ],
       order: { area: 'ASC', firstName: 'ASC' },
     });
 
