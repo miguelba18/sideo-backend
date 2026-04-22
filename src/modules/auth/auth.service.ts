@@ -101,6 +101,7 @@ return { message: 'Empresa registrada. Revisa tu correo para obtener tus credenc
         role: user.role,
         profileCompleted: user.profileCompleted,
         companyId: user.companyId,
+        companyLogoUrl: user.company?.logoUrl ?? null,
       },
     };
   }

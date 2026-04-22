@@ -43,7 +43,7 @@ export class UsersService {
       position: dto.position,
       passwordHash,
       role: RoleEnum.EVALUATOR,
-      profileCompleted: false,
+      profileCompleted: true,
       tempPasswordExpiry: tempExpiry,
     });
 

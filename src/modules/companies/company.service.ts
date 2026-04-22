@@ -40,7 +40,6 @@ export class CompaniesService {
       .addSelect(['u.firstName', 'u.lastName', 'u.email', 'u.lastLogin'])
       .leftJoin('c.employees', 'emp')
       .addSelect(['emp.id', 'emp.active'])
-      .where('c.active = true')
       .orderBy('c.createdAt', 'DESC')
       .getMany();
 
@@ -132,11 +131,9 @@ export class CompaniesService {
   async getSuperAdminDashboard() {
     const totalCompanies = await this.companyRepo.count({ where: { active: true } });
 
-    const companiesRaw = await this.companyRepo
+    const allRows = await this.companyRepo
       .createQueryBuilder('c')
-      .leftJoin('c.subscriptions', 'sub', 'sub.status IN (:...statuses)', {
-        statuses: ['active', 'cancelled'],
-      })
+      .leftJoin('c.subscriptions', 'sub')
       .leftJoin('c.employees', 'emp', 'emp.active = true')
       .select('c.id', 'id')
       .addSelect('c.name', 'name')
@@ -145,11 +142,22 @@ export class CompaniesService {
       .addSelect('sub.status', 'status')
       .addSelect('sub.endDate', 'endDate')
       .addSelect('sub.monthlyPrice', 'monthlyPrice')
+      .addSelect('sub.createdAt', 'subCreatedAt')
       .addSelect('COUNT(DISTINCT emp.id)', 'employeeCount')
       .where('c.active = true')
-      .groupBy('c.id, c.name, c.createdAt, sub.plan, sub.status, sub.endDate, sub.monthlyPrice')
+      .groupBy('c.id, c.name, c.createdAt, sub.plan, sub.status, sub.endDate, sub.monthlyPrice, sub.createdAt')
       .orderBy('c.createdAt', 'DESC')
       .getRawMany();
+
+    // Keep only the latest subscription row per company
+    const latestByCompany = new Map<string, any>();
+    for (const row of allRows) {
+      const existing = latestByCompany.get(row.id);
+      if (!existing || new Date(row.subCreatedAt) > new Date(existing.subCreatedAt)) {
+        latestByCompany.set(row.id, row);
+      }
+    }
+    const companiesRaw = Array.from(latestByCompany.values());
 
     const byPlan = companiesRaw.reduce((acc, c) => {
       const plan = c.plan ?? 'sin_plan';
